@@ -137,12 +137,33 @@ c$Yards = df$Yards
 #[rows,columns]
 c.matrix = as.matrix(c[1:280,])
 #need to complete more than 12 yards min.
+len = c.matrix[266,76]
+q1 = 4
+q2 = 7
+q3 = 10
+q4 = 14
+c.matrix[266,2:q1]
+c.matrix[266,q1+1:q2]
+c.matrix[266,q2+1:q3]
+c.matrix[266,q3+1:q4]
+
+q4 =c.matrix[2,76]
+q1=round(c.matrix[2,76]/4,digits = 0)
+q2=round(c.matrix[2,76]/4,digits = 0)*2
+q3=round(c.matrix[2,76]/4,digits = 0)*3
+c.matrix[2,2:q1]
+c.matrix[2,q1+1:q2]
+c.matrix[2,q2+1:q3]
+c.matrix[2,q3+1:q4]
+
+
+
 
 for(i in 1:nrow(c.matrix)){
   i_length = c.matrix[i,76]
   q1 = round(i_length/4,digits = 0)
   q2 = q1*2+1
-  q3 = q1 *3 +2
+  q3 = q1*3 +1
   q4 = i_length
   c$rate_sd1[i] = sd(c.matrix[i,2:q1])
   c$rate_sd2[i] = sd(c.matrix[i,q1:q2])
