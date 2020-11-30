@@ -8,6 +8,45 @@ df = read.csv('rawraw.csv',na.strings = c("","NA")) # read in raw csv data
 temps = read_excel("Leaderboard - Yards 75 updated.xlsx",sheet = "temps") # read in additional temp data
 
 
+# creating dummy variables for teams
+
+df$Australia =ifelse(df$Team == "Australia",1,0)
+df$Belarus = ifelse(df$Team =="Belarus",1,0)
+df$Belgium = ifelse(df$Team == "Belgium", 1,0)
+df$Canada = ifelse(df$Team == "Canada", 1,0)
+df$Denmark = ifelse(df$Team =="Denmark",1,0)
+df$Finland = ifelse(df$Team == "Finland", 1,0)
+df$France = ifelse(df$Team == "France", 1,0)
+df$Germany = ifelse(df$Team =="Germany",1,0)
+df$India = ifelse(df$Team == "India", 1,0)
+df$Ireland = ifelse(df$Team == "Ireland", 1,0)
+df$Japan = ifelse(df$Team =="Japan",1,0)
+df$Mexico = ifelse(df$Team == "Mexico", 1,0)
+df$NZ = ifelse(df$Team == "New Zealand", 1,0)
+df$Russia = ifelse(df$Team =="Russia",1,0)
+df$Singapore = ifelse(df$Team =="Singapore",1,0)
+df$Spain = ifelse(df$Team == "Spain", 1,0)
+df$Sweden = ifelse(df$Team == "Swede", 1,0)
+df$Switzerland = ifelse(df$Team == "Switzerland", 1,0)
+df$Ukraine = ifelse(df$Team == "Ukraine", 1,0)
+df$UK= ifelse(df$Team == "United Kingdom", 1,0)
+df$US= ifelse(df$Team == "United States", 1,0)
+
+
+# Creating dummy varaibles for age groups
+
+df$Age14_19 = ifelse(df$Age >=15 & df$Age<=19 ,1,0)
+df$Age20_24 = ifelse(df$Age >=20 & df$Age<=24,1,0)
+df$Age25_29 = ifelse(df$Age >=25 & df$Age<=29, 1,0)
+df$Age30_34 = ifelse(df$Age >=30 & df$Age<=34, 1,0)
+df$Age35_39 = ifelse(df$Age >=35 & df$Age<=39,1,0)
+df$Age40_44 = ifelse(df$Age >=40 & df$Age<=44, 1,0)
+df$Age45_49 = ifelse(df$Age >=45 & df$Age<=49, 1,0)
+df$Age50_54 = ifelse(df$Age >=50 & df$Age<=54,1,0)
+df$Age55_59 = ifelse(df$Age >=55 & df$Age<=59, 1,0)
+df$Age60_64 = ifelse(df$Age >=60 & df$Age<=64, 1,0)
+
+
 #function to convert time to seconds
 time_to_Sec <- function(x){
   per = ms(substr(x,1,5))
@@ -99,28 +138,27 @@ c$Yards = df$Yards
 c.matrix = as.matrix(c[1:280,])
 #need to complete more than 12 yards min.
 
-for(i in 1:nrow(c)){
-  i_length = c$Yards[i]
+for(i in 1:nrow(c.matrix)){
+  i_length = c.matrix[i,76]
   q1 = round(i_length/4,digits = 0)
   q2 = q1*2+1
   q3 = q1 *3 +2
   q4 = i_length
+  c$rate_sd1[i] = sd(c.matrix[i,2:q1])
+  c$rate_sd2[i] = sd(c.matrix[i,q1:q2])
+  c$rate_sd3[i] = sd(c.matrix[i,q2:q3])
+  c$rate_sd4[i] = sd(c.matrix[i,q3:q4])
   
-  c$rate_sd1[i] = sd(c.matrix[1,2:q1])
-  c$rate_sd2[i] = sd(c.matrix[1,q1:q2])
-  c$rate_sd3[i] = sd(c.matrix[1,q2:q3])
-  c$rate_sd4[i] = sd(c.matrix[1,q3:q4])
-  
-  c$avg_rate_q1[i] = mean(c.matrix[1,2:q1])
-  c$avg_rate_q2[i] = mean(c.matrix[1,q1:q2])
-  c$avg_rate_q3[i] = mean(c.matrix[1,q2:q3])
-  c$avg_rate_q4[i] = mean(c.matrix[1,q3:q4])
+  c$avg_rate_q1[i] = mean(c.matrix[i,2:q1])
+  c$avg_rate_q2[i] = mean(c.matrix[i,q1:q2])
+  c$avg_rate_q3[i] = mean(c.matrix[i,q2:q3])
+  c$avg_rate_q4[i] = mean(c.matrix[i,q3:q4])
   
   
-  c$median_rate_q1[i] = median(c.matrix[1,2:q1])
-  c$median_rate_q2[i] = median(c.matrix[1,q1:q2])
-  c$median_rate_q3[i] = median(c.matrix[1,q2:q3])
-  c$median_rate_q4[i] = median(c.matrix[1,q3:q4])
+  c$median_rate_q1[i] = median(c.matrix[i,2:q1])
+  c$median_rate_q2[i] = median(c.matrix[i,q1:q2])
+  c$median_rate_q3[i] = median(c.matrix[i,q2:q3])
+  c$median_rate_q4[i] = median(c.matrix[i,q3:q4])
 }
 
 
@@ -168,43 +206,22 @@ d$Nationality = df$Nationality[1:280]
 temps$Team = temps$Country
 e<- dplyr::left_join(d,temps,by="Team")
 
+finalDF <- dplyr::inner_join(e,df, by="Runner")
 
-# creating dummy variables for teams
+finalDF = finalDF[,-grep("Yard.",names(finalDF))]
+finalDF$Yards = e$Yards
+finalDF =finalDF[,-grep("Team",names(finalDF))]
+finalDF$Team = e$Team
 
-df$Australia =ifelse(df$Team == "Australia",1,0)
-df$Belarus = ifelse(df$Team =="Belarus",1,0)
-df$Belgium = ifelse(df$Team == "Belgium", 1,0)
-df$Canada = ifelse(df$Team == "Canada", 1,0)
-df$Denmark = ifelse(df$Team =="Denmark",1,0)
-df$Finland = ifelse(df$Team == "Finland", 1,0)
-df$France = ifelse(df$Team == "France", 1,0)
-df$Germany = ifelse(df$Team =="Germany",1,0)
-df$India = ifelse(df$Team == "India", 1,0)
-df$Ireland = ifelse(df$Team == "Ireland", 1,0)
-df$Japan = ifelse(df$Team =="Japan",1,0)
-df$Mexico = ifelse(df$Team == "Mexico", 1,0)
-df$NZ = ifelse(df$Team == "New Zealand", 1,0)
-df$Russia = ifelse(df$Team =="Russia",1,0)
-df$Singapore = ifelse(df$Team =="Singapore",1,0)
-df$Spain = ifelse(df$Team == "Spain", 1,0)
-df$Sweden = ifelse(df$Team == "Swede", 1,0)
-df$Switzerland = ifelse(df$Team == "Switzerland", 1,0)
-df$Ukraine = ifelse(df$Team == "Ukraine", 1,0)
-df$UK= ifelse(df$Team == "United Kingdom", 1,0)
-df$US= ifelse(df$Team == "United States", 1,0)
+finalDF =finalDF[,-grep("X",names(finalDF))]
+finalDF =finalDF[,-grep("Nationality",names(finalDF))]
+finalDF =finalDF[,-grep("Country",names(finalDF))]
+finalDF =finalDF[,-grep("Run.Time",names(finalDF))]
+finalDF =finalDF[,-grep("Low",names(finalDF))]
+finalDF =finalDF[,-grep("High",names(finalDF))]
+finalDF$AvgSeconds = time_to_Sec(finalDF$Avg)
+finalDF$MaxSeconds = time_to_Sec(finalDF$Max)
+finalDF$MinSeconds = time_to_Sec(finalDF$Min)
 
- 
-# Creating dummy varaibles for age groups
 
-df$Age14_19 = ifelse(df$Age >=15 & df$Age<=19 ,1,0)
-df$Age20_24 = ifelse(df$Age >=20 & df$Age<=24,1,0)
-df$Age25_29 = ifelse(df$Age >=25 & df$Age<=29, 1,0)
-df$Age30_34 = ifelse(df$Age >=30 & df$Age<=34, 1,0)
-df$Age35_39 = ifelse(df$Age >=35 & df$Age<=39,1,0)
-df$Age40_44 = ifelse(df$Age >=40 & df$Age<=44, 1,0)
-df$Age45_49 = ifelse(df$Age >=45 & df$Age<=49, 1,0)
-df$Age50_54 = ifelse(df$Age >=50 & df$Age<=54,1,0)
-df$Age55_59 = ifelse(df$Age >=55 & df$Age<=59, 1,0)
-df$Age60_64 = ifelse(df$Age >=60 & df$Age<=64, 1,0)
-
-#View(df)
+write.csv(finalDF, "FinalDF.csv",row.names = TRUE)
