@@ -26,16 +26,16 @@ df$NZ = ifelse(df$Team == "New Zealand", 1,0)
 df$Russia = ifelse(df$Team =="Russia",1,0)
 df$Singapore = ifelse(df$Team =="Singapore",1,0)
 df$Spain = ifelse(df$Team == "Spain", 1,0)
-df$Sweden = ifelse(df$Team == "Swede", 1,0)
+df$Sweden = ifelse(df$Team == "Sweden", 1,0)
 df$Switzerland = ifelse(df$Team == "Switzerland", 1,0)
 df$Ukraine = ifelse(df$Team == "Ukraine", 1,0)
 df$UK= ifelse(df$Team == "United Kingdom", 1,0)
 df$US= ifelse(df$Team == "United States", 1,0)
 
 
-# Creating dummy varaibles for age groups
+# Creating dummy variables for age groups
 
-df$Age14_19 = ifelse(df$Age >=15 & df$Age<=19 ,1,0)
+df$Age15_19 = ifelse(df$Age >=15 & df$Age<=19 ,1,0)
 df$Age20_24 = ifelse(df$Age >=20 & df$Age<=24,1,0)
 df$Age25_29 = ifelse(df$Age >=25 & df$Age<=29, 1,0)
 df$Age30_34 = ifelse(df$Age >=30 & df$Age<=34, 1,0)

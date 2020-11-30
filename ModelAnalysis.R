@@ -57,8 +57,11 @@ pairs(df[,grepl("rate_sd.",names(df))])
 exclude_vars <- names(df) %in% c("Runner" ,"Max", "Min", "Avg" ,"Age", "Team", "Gen", "X")
 df.filtered <-df[,!exclude_vars]
 
+df.filtered$logYards = log(df.filtered$Yards)
+
 fit.lm.1 = lm(Yards ~ rate_sd1+rate_sd2+rate_sd_diff_4_1+
                 avg_rate_q2+avg_rate_q3+avg_rate_q4+
+                median_rate_q1+median_rate_q2+median_rate_q3+median_rate_q4+
                 Finland:difference+
                 Canada:difference+
                 Ukraine:difference+
@@ -78,10 +81,75 @@ fit.lm.1 = lm(Yards ~ rate_sd1+rate_sd2+rate_sd_diff_4_1+
                 India:difference+
                 Singapore:difference+
                 Russia:difference+
+                Belarus:difference+
                 Belarus:difference
                 , data = df.filtered)
 
-summary(fit.lm.1)
-  
+anova(fit.lm.1)
 
+summary(fit.lm.1)
+
+par(mfrow=c(2,2))
+plot(fit.lm.1)
 cor(df.filtered[,1:13])
+
+
+
+fit.lm.2 = lm(logYards ~ rate_sd1+rate_sd2+rate_sd_diff_4_1+
+                avg_rate_q2+avg_rate_q3+avg_rate_q4+
+                median_rate_q1+median_rate_q2+median_rate_q3+median_rate_q4+
+                Finland:difference+
+                Canada:difference+
+                Ukraine:difference+
+                Switzerland:difference+
+                Denmark:difference+
+                Belgium:difference+
+                Ireland:difference+
+                UK:difference+
+                Germany:difference+
+                France:difference+
+                NZ:difference+
+                US:difference+
+                Japan:difference+
+                Spain:difference+
+                Australia:difference+
+                Mexico:difference+
+                India:difference+
+                Singapore:difference+
+                Russia:difference+
+                Belarus:difference+
+                Belarus:difference
+              , data = df.filtered)
+
+
+summary(fit.lm.2)
+par(mfrow=c(2,2))
+plot(fit.lm.2)
+
+
+plot(logYards ~ rate_sd1+rate_sd2+rate_sd_diff_4_1+
+                avg_rate_q2+avg_rate_q3+avg_rate_q4+
+                median_rate_q1+median_rate_q2+median_rate_q3+median_rate_q4+
+                Finland:difference+
+                Canada:difference+
+                Ukraine:difference+
+                Switzerland:difference+
+                Denmark:difference+
+                Belgium:difference+
+                Ireland:difference+
+                UK:difference+
+                Germany:difference+
+                France:difference+
+                NZ:difference+
+                US:difference+
+                Japan:difference+
+                Spain:difference+
+                Australia:difference+
+                Mexico:difference+
+                India:difference+
+                Singapore:difference+
+                Russia:difference+
+                Belarus:difference+
+                Belarus:difference
+              , data = df.filtered)
+
