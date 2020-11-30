@@ -36,6 +36,14 @@ df$Ukraine = as.factor(df$Ukraine)
 df$UK= as.factor(df$UK)
 df$US= as.factor(df$US)
 
+#update belarus temps
+df$difference[163] = 10 
+df$difference[177] = 10 
+df$difference[224] = 10 
+df$difference[255] = 10 
+df$difference[266] = 10
+
+
 #full model 
 fit.lm = lm(Yards ~ .- Runner-Max-Min-Avg-Team-Age ,data = df)
 summary(fit.lm)
@@ -45,3 +53,35 @@ sapply(df,class)
 pairs(df[,grepl("avg_rate",names(df))])
 pairs(df[,grepl("median_rate.",names(df))])
 pairs(df[,grepl("rate_sd.",names(df))])
+
+exclude_vars <- names(df) %in% c("Runner" ,"Max", "Min", "Avg" ,"Age", "Team", "Gen", "X")
+df.filtered <-df[,!exclude_vars]
+
+fit.lm.1 = lm(Yards ~ rate_sd1+rate_sd2+rate_sd_diff_4_1+
+                avg_rate_q2+avg_rate_q3+avg_rate_q4+
+                Finland:difference+
+                Canada:difference+
+                Ukraine:difference+
+                Switzerland:difference+
+                Denmark:difference+
+                Belgium:difference+
+                Ireland:difference+
+                UK:difference+
+                Germany:difference+
+                France:difference+
+                NZ:difference+
+                US:difference+
+                Japan:difference+
+                Spain:difference+
+                Australia:difference+
+                Mexico:difference+
+                India:difference+
+                Singapore:difference+
+                Russia:difference+
+                Belarus:difference
+                , data = df.filtered)
+
+summary(fit.lm.1)
+  
+
+cor(df.filtered[,1:13])
