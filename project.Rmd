@@ -68,13 +68,11 @@ pairs(df[,grepl("rate_sd.",names(df))])
 exclude_vars <- names(df) %in% c("Runner" ,"Max", "Min", "Avg" ,"Age", "Team", "Gen", "X")
 df.filtered <-df[,!exclude_vars]
 
-
+#test
 ```
 
 ```{r}
 #Run Model w/ interaction effects no age
-
-
 fit.lm.1 = lm(Yards ~ rate_sd1*rate_sd4+rate_sd2+rate_sd3+
                 avg_rate_q2+avg_rate_q3+avg_rate_q4+
                 median_rate_q1+median_rate_q2+median_rate_q3+median_rate_q4+
