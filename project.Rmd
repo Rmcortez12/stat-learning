@@ -11,6 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
+library(MASS)
+library(car)
 #Load Data
 
 setwd("d:/UTSA/Fall2020/DataMining/Project/stat-learning") # set working directory
@@ -57,25 +59,30 @@ df$difference[224] = 10
 df$difference[255] = 10 
 df$difference[266] = 10
 
+exclude_vars <- names(df) %in% c("Runner" ,"Max", "Min", "Avg" ,"Age", "Team", "X" )
+df.filtered <-df[,!exclude_vars]
+
 #full model 
-fit.lm = lm(Yards ~ .- Runner-Max-Min-Avg-Team-Age-X ,data = df)
+fit.lm = lm(Yards ~ .,data = df.filtered)
 summary(fit.lm)
 
 pairs(df[,grepl("avg_rate",names(df))])
 pairs(df[,grepl("median_rate.",names(df))])
 pairs(df[,grepl("rate_sd.",names(df))])
 
-exclude_vars <- names(df) %in% c("Runner" ,"Max", "Min", "Avg" ,"Age", "Team", "Gen", "X")
+exclude_vars <- names(df) %in% c("Runner" ,"Max", "Min", "Avg" ,"Age", "Team", "Gen", "X", "Gender")
 df.filtered <-df[,!exclude_vars]
 
-#test
+plot(fit.lm)
+
 ```
 
 ```{r}
-#Run Model w/ interaction effects no age
-fit.lm.1 = lm(Yards ~ rate_sd1*rate_sd4+rate_sd2+rate_sd3+
-                avg_rate_q2+avg_rate_q3+avg_rate_q4+
-                median_rate_q1+median_rate_q2+median_rate_q3+median_rate_q4+
+#Run Model w/ interaction effects
+#0- age groups indicate 60-64 age group
+#0 - countryies indicate Belarus
+
+fit.lm.1 = lm(Yards ~ .+
                 Finland:difference+
                 Canada:difference+
                 Ukraine:difference+
@@ -94,29 +101,45 @@ fit.lm.1 = lm(Yards ~ rate_sd1*rate_sd4+rate_sd2+rate_sd3+
                 Mexico:difference+
                 India:difference+
                 Singapore:difference+
-                Russia:difference+
-                Belarus:difference+
-                Belarus:difference
+                Russia:difference
+                - rate_sd_diff_4_1
+                -Age60_64                       
+                -Sweden
+                -Russia
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                -India
+                -Singapore
+                -Belarus
+                - AvgSeconds #high vif
                 ,data = df.filtered)
 
 anova(fit.lm.1)
 
 summary(fit.lm.1)
 
-par(mfrow=c(2,2))
 plot(fit.lm.1)
-cor(df.filtered[,1:13])
+
+library(car)
+vif(fit.lm.1)
 ```
-
 ```{r}
-
-#transform y
-df.filtered$logYards = log(df.filtered$Yards)
-
-
-fit.lm.2 = lm(logYards ~ rate_sd1+rate_sd2+rate_sd_diff_4_1+
-                avg_rate_q2+avg_rate_q3+avg_rate_q4+
-                median_rate_q1+median_rate_q2+median_rate_q3+median_rate_q4+
+df.filtered$cubic_y = df.filtered$Yards^3
+fit.lm.2 = lm(cubic_y ~ .+
                 Finland:difference+
                 Canada:difference+
                 Ukraine:difference+
@@ -135,21 +158,48 @@ fit.lm.2 = lm(logYards ~ rate_sd1+rate_sd2+rate_sd_diff_4_1+
                 Mexico:difference+
                 India:difference+
                 Singapore:difference+
-                Belarus:difference+
                 Russia:difference
-              , data = df.filtered)
-```
-
-```{r}
+                - rate_sd_diff_4_1
+                -Age60_64                       
+                -Sweden
+                -Russia
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                -India
+                -Singapore
+                -Belarus
+                - AvgSeconds #high vif
+                ,data = df.filtered)
 
 summary(fit.lm.2)
-par(mfrow=c(2,2))
+
 plot(fit.lm.2)
 
+```
+```{r}
+boxplot(df$Yards)
+mean(df$Yards)
+median(df$Yards)
+#remove points 1 and 2 almost 3x as large
+df.filtered = df.filtered[-c(1:4, 280),]
 
-plot(logYards ~ rate_sd1+rate_sd2+rate_sd_diff_4_1+
-                avg_rate_q2+avg_rate_q3+avg_rate_q4+
-                median_rate_q1+median_rate_q2+median_rate_q3+median_rate_q4+
+
+df.filtered$cubic_y = df.filtered$Yards^(2)
+fit.lm.2 = lm(cubic_y ~ .+
                 Finland:difference+
                 Canada:difference+
                 Ukraine:difference+
@@ -168,132 +218,46 @@ plot(logYards ~ rate_sd1+rate_sd2+rate_sd_diff_4_1+
                 Mexico:difference+
                 India:difference+
                 Singapore:difference+
-                Belarus:difference+
                 Russia:difference
-              , data = df.filtered)
+                - rate_sd_diff_4_1
+                -Age60_64                       
+                -Sweden
+                -Russia
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                -India
+                -Singapore
+                -Belarus
+                - AvgSeconds #high vif
+                ,data = df.filtered)
+
+summary(fit.lm.2)
+
+plot(fit.lm.2)
+a =boxCox(fit.lm.2,data = df.filtered)
+?boxCox
+
+library(olsrr)
+ols_plot_resid_stud(fit.lm.2)
+outlierTest(fit.lm.2, cutoff = .05)
 
 ```
-
 ```{r}
 
-df.filtered$logRateSD1 = log(df.filtered$rate_sd1)
-df.filtered$logRateSD2 = log(df.filtered$rate_sd2)
-df.filtered$logRateSD3 = log(df.filtered$rate_sd3)
-df.filtered$logRateSD4 = log(df.filtered$rate_sd4)
 
-
-plot(logYards~logRateSD1+logRateSD2+logRateSD3+logRateSD4+
-                avg_rate_q1+avg_rate_q2+avg_rate_q3+avg_rate_q4+
-                median_rate_q1+median_rate_q2+median_rate_q3+median_rate_q4+
-                Age15_19+
-                Age20_24+
-                Age25_29+
-                Age30_34+
-                Age35_39+
-                Age40_44+
-                Age45_49+
-                Age50_54+
-                Age55_59+
-                Age60_64+
-                Finland:difference+
-                Canada:difference+
-                Ukraine:difference+
-                Switzerland:difference+
-                Denmark:difference+
-                Belgium:difference+
-                Ireland:difference+
-                UK:difference+
-                Germany:difference+
-                France:difference+
-                NZ:difference+
-                US:difference+
-                Japan:difference+
-                Spain:difference+
-                Australia:difference+
-                Mexico:difference+
-                India:difference+
-                Singapore:difference+
-                Belarus:difference+
-                Russia:difference
-              , data = df.filtered)
-
-
-fit.lm.3 = lm(logYards ~ logRateSD1+logRateSD2+logRateSD3+logRateSD4+
-                avg_rate_q1+avg_rate_q2+avg_rate_q3+avg_rate_q4+
-                median_rate_q1+median_rate_q2+median_rate_q3+median_rate_q4+
-                Age15_19+
-                Age20_24+
-                Age25_29+
-                Age30_34+
-                Age35_39+
-                Age40_44+
-                Age45_49+
-                Age50_54+
-                Age55_59+
-                Age60_64+
-                Finland:difference+
-                Canada:difference+
-                Ukraine:difference+
-                Switzerland:difference+
-                Denmark:difference+
-                Belgium:difference+
-                Ireland:difference+
-                UK:difference+
-                Germany:difference+
-                France:difference+
-                NZ:difference+
-                US:difference+
-                Japan:difference+
-                Spain:difference+
-                Australia:difference+
-                Mexico:difference+
-                India:difference+
-                Singapore:difference+
-                Belarus:difference+
-                Russia:difference
-              , data = df.filtered)
-summary(fit.lm.3)
-
-par(mfrow=c(2,2))
-plot(fit.lm.3)
-```
-```{r}
-df.filtered$sqrt_yards = sqrt(df.filtered$Yards)
-df.filtered$cuberoot_yards = df.filtered$Yards^(-1/3)
-
-#if all ages are 0 runner belongs to age 60-65
-#if all countries*differences are 0 runner belongs to Russia
-
-fit.lm.4 = lm(cuberoot_yards ~ logRateSD1+logRateSD2+logRateSD3+logRateSD4+
-                avg_rate_q1+avg_rate_q2+avg_rate_q3+avg_rate_q4+
-                median_rate_q1+median_rate_q2+median_rate_q3+median_rate_q4+
-                Finland:difference
-                Canada:difference+
-                Ukraine:difference+
-                Switzerland:difference+
-                Denmark:difference+
-                Belgium:difference+
-                Ireland:difference+
-                UK:difference+
-                Germany:difference+
-                France:difference+
-                NZ:difference+
-                US:difference+
-                Japan:difference+
-                Spain:difference+
-                Australia:difference+
-                Mexico:difference+
-                India:difference+
-                Singapore:difference+
-                Belarus:difference
-              , data = df.filtered)
-summary(fit.lm.4)
-
-par(mfrow=c(2,2))
-plot(fit.lm.4)
 ```
 
-
-```{r}
-plot(Yards~difference:Canada, data = df.filtered)
-```
