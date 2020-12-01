@@ -137,27 +137,7 @@ c$Yards = df$Yards
 #[rows,columns]
 c.matrix = as.matrix(c[1:280,])
 #need to complete more than 12 yards min.
-len = c.matrix[266,76]
-q1 = 4
-q2 = 7
-q3 = 10
-q4 = 14
-c.matrix[266,2:q1]
-c.matrix[266,q1+1:q2]
-c.matrix[266,q2+1:q3]
-c.matrix[266,q3+1:q4]
-
-q4 =c.matrix[2,76]
-q1=round(c.matrix[2,76]/4,digits = 0)
-q2=round(c.matrix[2,76]/4,digits = 0)*2
-q3=round(c.matrix[2,76]/4,digits = 0)*3
-c.matrix[2,2:q1]
-c.matrix[2,q1+1:q2]
-c.matrix[2,q2+1:q3]
-c.matrix[2,q3+1:q4]
-
-
-
+a.matrix = as.matrix(a.sec)
 
 for(i in 1:nrow(c.matrix)){
   i_length = c.matrix[i,76]
@@ -165,6 +145,7 @@ for(i in 1:nrow(c.matrix)){
   q2 = q1*2+1
   q3 = q1*3 +1
   q4 = i_length
+  
   c$rate_sd1[i] = sd(c.matrix[i,2:q1])
   c$rate_sd2[i] = sd(c.matrix[i,q1:q2])
   c$rate_sd3[i] = sd(c.matrix[i,q2:q3])
@@ -180,6 +161,29 @@ for(i in 1:nrow(c.matrix)){
   c$median_rate_q2[i] = median(c.matrix[i,q1:q2])
   c$median_rate_q3[i] = median(c.matrix[i,q2:q3])
   c$median_rate_q4[i] = median(c.matrix[i,q3:q4])
+
+  
+  c$sd_q1[i] = sd(a.matrix[i,1:q1])
+  c$sd_q2[i] = sd(a.matrix[i,q1:q2])
+  c$sd_q3[i] = sd(a.matrix[i,q2:q3])
+  c$sd_q4[i] = sd(a.matrix[i,q3:q4])
+  
+  c$avg_sec_q1[i] = mean(a.matrix[i,1:q1])
+  c$avg_sec_q2[i] = mean(a.matrix[i,q1:q2])
+  c$avg_sec_q3[i] = mean(a.matrix[i,q2:q3])
+  c$avg_sec_q4[i] = mean(a.matrix[i,q3:q4])
+  
+  
+  c$median_sec_q1[i] = median(a.matrix[i,1:q1])
+  c$median_sec_q2[i] = median(a.matrix[i,q1:q2])
+  c$median_sec_q3[i] = median(a.matrix[i,q2:q3])
+  c$median_sec_q4[i] = median(a.matrix[i,q3:q4])
+  
+  c$range_q1[i] = max(a.matrix[i,1:q1])-min(a.matrix[i,1:q1])
+  c$range_q1[i] = max(a.matrix[i,q1:q2])-min(a.matrix[i,q1:q2])
+  c$range_q1[i] = max(a.matrix[i,q2:q3])-min(a.matrix[i,q2:q3])
+  c$range_q1[i] = max(a.matrix[i,q3:q4])-min(a.matrix[i,q3:q4])
+  
 }
 
 
