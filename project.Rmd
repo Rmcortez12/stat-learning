@@ -61,14 +61,10 @@ df$difference[266] = 10
 
 exclude_vars <- names(df) %in% c("Runner" ,"Max", "Min", "Avg" ,"Age", "Team", "X" )
 df.filtered <-df[,!exclude_vars]
-df.filtered$logy = log(df.filtered$Yards)
+
 #full model 
-fit.lm = lm(logy ~ .,data = df.filtered)
-
+fit.lm = lm(Yards ~ .,data = df.filtered)
 summary(fit.lm)
-
-
-
 
 pairs(df[,grepl("avg_rate",names(df))])
 pairs(df[,grepl("median_rate.",names(df))])
@@ -76,9 +72,6 @@ pairs(df[,grepl("rate_sd.",names(df))])
 
 exclude_vars <- names(df) %in% c("Runner" ,"Max", "Min", "Avg" ,"Age", "Team", "Gen", "X", "Gender")
 df.filtered <-df[,!exclude_vars]
-
-
-
 
 plot(fit.lm)
 
@@ -515,6 +508,7 @@ fit.lm.7 = lm(logy ~ .+
                 - difference                          
                 -Sweden
                 -Russia
+                - Yards
                 -Finland
                 -Canada
                 -Ukraine
@@ -536,5 +530,504 @@ fit.lm.7 = lm(logy ~ .+
                 -Belarus
               ,data = df.filtered.2)
 summary(fit.lm.7)
-plot(fit.lm.7)
+
+df.filtered.2 = df.filtered.2[-c(94),]
+df.filtered.2 = df.filtered.2[-c(124),]
+
+plot(df.filtered.2$Yards ~range_q1+range_q2+range_q3+range_q4,data = df.filtered.2)
+
+
+```
+```{r}
+
+fit.lm.8 = lm(logy ~ .+
+                Finland:difference+
+                Canada:difference+
+                Ukraine:difference+
+                Switzerland:difference+
+                Denmark:difference+
+                Belgium:difference+
+                Ireland:difference+
+                UK:difference+
+                Germany:difference+
+                France:difference+
+                NZ:difference+
+                US:difference+
+                Japan:difference+
+                Spain:difference+
+                Australia:difference+
+                Mexico:difference+
+                India:difference+
+                Singapore:difference+
+                Russia:difference
+                - difference                          
+                -Sweden
+                -Russia
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                - Yards
+                -India
+                -Singapore
+                -Belarus
+              ,data = df.filtered.2)
+summary(fit.lm.8)
+plot(fit.lm.8)
+```
+
+
+```{r}
+
+fit.lm.9 = lm(logy ~ .+
+                Finland:difference+
+                Canada:difference+
+                Ukraine:difference+
+                Switzerland:difference+
+                Denmark:difference+
+                Belgium:difference+
+                Ireland:difference+
+                UK:difference+
+                Germany:difference+
+                France:difference+
+                NZ:difference+
+                US:difference+
+                Japan:difference+
+                Spain:difference+
+                Australia:difference+
+                Mexico:difference+
+                India:difference+
+                Singapore:difference+
+                Russia:difference
+                - difference
+                - Yards
+                -Sweden
+                -Russia
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                -India
+                -Singapore
+                -Belarus
+                - rate_sd1
+                - rate_sd2
+                -rate_sd3
+                -rate_sd4
+              ,data = df.filtered.2)
+summary(fit.lm.9)
+plot(fit.lm.9)
+
+anova(fit.lm.9, fit.lm.8)
+```
+
+```{r}
+
+fit.lm.10 = lm(logy ~ .+
+                Finland:difference+
+                Canada:difference+
+                Ukraine:difference+
+                Switzerland:difference+
+                Denmark:difference+
+                Belgium:difference+
+                Ireland:difference+
+                UK:difference+
+                Germany:difference+
+                France:difference+
+                NZ:difference+
+                US:difference+
+                Japan:difference+
+                Spain:difference+
+                Australia:difference+
+                Mexico:difference+
+                India:difference+
+                Singapore:difference+
+                Russia:difference
+                - difference
+                - Yards
+                -Sweden
+              - median_rate_q1
+              - median_rate_q2
+              - median_rate_q3
+              - median_rate_q4
+                -Russia
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                -India
+                -Singapore
+                -Belarus
+                - rate_sd1
+                - rate_sd2
+                -rate_sd3
+                -rate_sd4
+              ,data = df.filtered.2)
+summary(fit.lm.10)
+plot(fit.lm.10)
+
+anova(fit.lm.9, fit.lm.10)
+```
+
+```{r}
+
+fit.lm.11 = lm(logy ~ .+
+                Finland:difference+
+                Canada:difference+
+                Ukraine:difference+
+                Switzerland:difference+
+                Denmark:difference+
+                Belgium:difference+
+                Ireland:difference+
+                UK:difference+
+                Germany:difference+
+                France:difference+
+                NZ:difference+
+                US:difference+
+                Japan:difference+
+                Spain:difference+
+                Australia:difference+
+                Mexico:difference+
+                India:difference+
+                Singapore:difference+
+                Russia:difference
+                - difference
+                - Yards
+                -Sweden
+              - median_rate_q1
+              - median_rate_q2
+              - median_rate_q3
+              - median_rate_q4
+              - median_sec_q2
+              - median_sec_q3
+              - median_sec_q4
+                -Russia
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                -India
+                -Singapore
+                -Belarus
+                - rate_sd1
+                - rate_sd2
+                -rate_sd3
+                -rate_sd4
+              ,data = df.filtered.2)
+summary(fit.lm.11)
+plot(fit.lm.11)
+
+anova(fit.lm.11, fit.lm.10)
+```
+```{r}
+
+fit.lm.12 = lm(logy ~ .+
+                Finland:difference+
+                Canada:difference+
+                Ukraine:difference+
+                Switzerland:difference+
+                Denmark:difference+
+                Belgium:difference+
+                Ireland:difference+
+                UK:difference+
+                Germany:difference+
+                France:difference+
+                NZ:difference+
+                US:difference+
+                Japan:difference+
+                Spain:difference+
+                Australia:difference+
+                Mexico:difference+
+                India:difference+
+                Singapore:difference+
+                Russia:difference
+                - difference
+                - Yards
+                -Sweden
+              - median_rate_q1
+              - median_rate_q2
+              - median_rate_q3
+              - median_rate_q4
+              - median_sec_q2
+              - median_sec_q3
+              - median_sec_q4
+              - avg_rate_q1
+              - avg_rate_q2
+              - avg_rate_q3
+                -Russia
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                -India
+                -Singapore
+                -Belarus
+                - rate_sd1
+                - rate_sd2
+                -rate_sd3
+                -rate_sd4
+              ,data = df.filtered.2)
+summary(fit.lm.12)
+plot(fit.lm.12)
+
+anova(fit.lm.11, fit.lm.12)
+```
+```{r}
+fit.lm.13 = lm(logy ~ .+
+                Finland:difference+
+                Canada:difference+
+                Ukraine:difference+
+                Switzerland:difference+
+                Denmark:difference+
+                Belgium:difference+
+                Ireland:difference+
+                UK:difference+
+                Germany:difference+
+                France:difference+
+                NZ:difference+
+                US:difference+
+                Japan:difference+
+                Spain:difference+
+                Australia:difference+
+                Mexico:difference+
+                India:difference+
+                Singapore:difference+
+                Russia:difference
+                - difference
+                - Yards
+                -Sweden
+              - median_rate_q1
+              - median_rate_q2
+              - median_rate_q3
+              - median_rate_q4
+              - median_sec_q2
+              - median_sec_q3
+              - median_sec_q4
+              - avg_rate_q1
+              - avg_rate_q2
+              - avg_rate_q3
+                -Russia
+              - MaxSeconds
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                -India
+                -Singapore
+                -Belarus
+                - rate_sd1
+                - rate_sd2
+                -rate_sd3
+                -rate_sd4
+              ,data = df.filtered.2)
+summary(fit.lm.13)
+plot(fit.lm.13)
+anova(fit.lm.13, fit.lm.12)
+```
+```{r}
+fit.lm.14 = lm(logy ~ .+
+                Finland:difference+
+                Canada:difference+
+                Ukraine:difference+
+                Switzerland:difference+
+                Denmark:difference+
+                Belgium:difference+
+                Ireland:difference+
+                UK:difference+
+                Germany:difference+
+                France:difference+
+                NZ:difference+
+                US:difference+
+                Japan:difference+
+                Spain:difference+
+                Australia:difference+
+                Mexico:difference+
+                India:difference+
+                Singapore:difference+
+                Russia:difference
+                - difference
+                - Yards
+                -Sweden
+              - median_rate_q1
+              - median_rate_q2
+              - median_rate_q3
+              - median_rate_q4
+              - median_sec_q2
+              - median_sec_q3
+              - median_sec_q4
+              - avg_rate_q1
+              - avg_rate_q2
+              - avg_rate_q3
+                -Russia
+              - MaxSeconds
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                -India
+                -Singapore
+                -Belarus
+                - rate_sd1
+                - rate_sd2
+                -rate_sd3
+                -rate_sd4
+                -avg_sec_q2
+                -sd_q2
+                - avg_sec_q4
+              ,data = df.filtered.2)
+summary(fit.lm.14)
+plot(fit.lm.14)
+anova(fit.lm.14, fit.lm.13)
+```
+```{r}
+fit.lm.15 = lm(logy ~ .+
+                Finland:difference+
+                Canada:difference+
+                Ukraine:difference+
+                Switzerland:difference+
+                Denmark:difference+
+                Belgium:difference+
+                Ireland:difference+
+                UK:difference+
+                Germany:difference+
+                France:difference+
+                NZ:difference+
+                US:difference+
+                Japan:difference+
+                Spain:difference+
+                Australia:difference+
+                Mexico:difference+
+                India:difference+
+                Singapore:difference+
+                Russia:difference
+                - difference
+                - Yards
+                -Sweden
+              - median_rate_q1
+              - median_rate_q2
+              - median_rate_q3
+              - median_rate_q4
+              - median_sec_q2
+              - median_sec_q3
+              - median_sec_q4
+              - avg_rate_q1
+              - avg_rate_q2
+              - avg_rate_q3
+                -Russia
+              - MaxSeconds
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                -India
+                -Singapore
+                -Belarus
+                - rate_sd1
+                - rate_sd2
+                -rate_sd3
+                -rate_sd4
+                -avg_sec_q2
+                -sd_q2
+                - avg_sec_q4
+              - range_q2
+              ,data = df.filtered.2)
+summary(fit.lm.15)
+plot(fit.lm.15)
+anova(fit.lm.14, fit.lm.15)
 ```

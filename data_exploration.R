@@ -180,9 +180,9 @@ for(i in 1:nrow(c.matrix)){
   c$median_sec_q4[i] = median(a.matrix[i,q3:q4])
   
   c$range_q1[i] = max(a.matrix[i,1:q1])-min(a.matrix[i,1:q1])
-  c$range_q1[i] = max(a.matrix[i,q1:q2])-min(a.matrix[i,q1:q2])
-  c$range_q1[i] = max(a.matrix[i,q2:q3])-min(a.matrix[i,q2:q3])
-  c$range_q1[i] = max(a.matrix[i,q3:q4])-min(a.matrix[i,q3:q4])
+  c$range_q2[i] = max(a.matrix[i,q1:q2])-min(a.matrix[i,q1:q2])
+  c$range_q3[i] = max(a.matrix[i,q2:q3])-min(a.matrix[i,q2:q3])
+  c$range_q4[i] = max(a.matrix[i,q3:q4])-min(a.matrix[i,q3:q4])
   
 }
 
