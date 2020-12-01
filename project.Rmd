@@ -964,34 +964,15 @@ plot(fit.lm.14)
 anova(fit.lm.14, fit.lm.13)
 ```
 ```{r}
-fit.lm.15 = lm(logy ~ .+
-                Finland:difference+
-                Canada:difference+
-                Ukraine:difference+
-                Switzerland:difference+
-                Denmark:difference+
-                Belgium:difference+
-                Ireland:difference+
-                UK:difference+
-                Germany:difference+
-                France:difference+
-                NZ:difference+
-                US:difference+
-                Japan:difference+
-                Spain:difference+
-                Australia:difference+
-                Mexico:difference+
-                India:difference+
-                Singapore:difference+
-                Russia:difference
-                - difference
+fit.lm.15 = lm(logy ~ .
                 - Yards
                 -Sweden
               - median_rate_q1
               - median_rate_q2
               - median_rate_q3
               - median_rate_q4
-              - median_sec_q2
+              - median_sec_q1
+             - median_sec_q2
               - median_sec_q3
               - median_sec_q4
               - avg_rate_q1
@@ -1023,6 +1004,7 @@ fit.lm.15 = lm(logy ~ .+
                 -rate_sd3
                 -rate_sd4
                 -avg_sec_q2
+               -avg_sec_q1
                 -sd_q2
                 - avg_sec_q4
               - range_q2
@@ -1030,4 +1012,123 @@ fit.lm.15 = lm(logy ~ .+
 summary(fit.lm.15)
 plot(fit.lm.15)
 anova(fit.lm.14, fit.lm.15)
+```
+```{r}
+fit.glm = glm(logy ~ .
+                - Yards
+                -Sweden
+              - median_rate_q1
+              - median_rate_q2
+              - median_rate_q3
+              - median_rate_q4
+              - median_sec_q1
+             - median_sec_q2
+              - median_sec_q3
+              - median_sec_q4
+              - avg_rate_q1
+              - avg_rate_q2
+              - avg_rate_q3
+                -Russia
+              - MaxSeconds
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                -India
+                -Singapore
+                -Belarus
+                - rate_sd1
+                - rate_sd2
+                -rate_sd3
+                -rate_sd4
+                -avg_sec_q2
+               -avg_sec_q1
+
+                -sd_q2
+                - avg_sec_q4
+              - range_q2
+              ,data = df.filtered.2)
+summary(fit.glm)
+anova(fit.glm)
+plot(fit.glm)
+vif(fit.glm)
+library(boot)
+cv.err = cv.glm(df.filtered.2, fit.glm)
+cv.err$delta
+
+for (j in 1:10) {
+  error <- c()
+  for (i in 1:nrow(df.filtered.2)) {
+    model <- glm(logy ~ .
+                - Yards
+                -Sweden
+              - median_rate_q1
+              - median_rate_q2
+              - median_rate_q3
+              - median_rate_q4
+              - median_sec_q1
+             - median_sec_q2
+              - median_sec_q3
+              - median_sec_q4
+              - avg_rate_q1
+              - avg_rate_q2
+              - avg_rate_q3
+                -Russia
+              - MaxSeconds
+                -Finland
+                -Canada
+                -Ukraine
+                -Switzerland
+                -Denmark
+                -Belgium
+                -Ireland
+                -UK
+                -Germany
+                -France
+                -NZ
+                -US
+                -Japan
+                -Spain
+                -Australia
+                -Mexico
+                -India
+                -Singapore
+                -Belarus
+                - rate_sd1
+                - rate_sd2
+                -rate_sd3
+                -rate_sd4
+                -avg_sec_q2
+                -avg_sec_q1
+                -sd_q2
+                - avg_sec_q4
+              - range_q2, data = df.filtered.2[-i,])
+    prediction <- predict(model, newdata = df.filtered.2[i,])
+    error[i] <- (prediction - df.filtered.2[i, "logy"]) ^ 2
+    if (i == nrow(df.filtered.2)) {
+      LOOCV_MSE <- mean(error)
+    }
+  }
+}
+LOOCV_MSE
+
+
+
+
+
+
+
+
 ```
