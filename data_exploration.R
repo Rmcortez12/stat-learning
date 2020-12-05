@@ -129,7 +129,7 @@ points(74,b[1,74])
 for(i in 2:7){
   points(1:74,b[i,1:74],type = "l", col=randomColor(10, luminosity = "random"))
   points(b$Yards[i]-1,b[i,b$Yards[i]-1])
-  }
+}
 
 #Need a way to find deviations for rates for percentages. 
 c= rate_builder(a.sec)
@@ -161,7 +161,7 @@ for(i in 1:nrow(c.matrix)){
   c$median_rate_q2[i] = median(c.matrix[i,q1:q2])
   c$median_rate_q3[i] = median(c.matrix[i,q2:q3])
   c$median_rate_q4[i] = median(c.matrix[i,q3:q4])
-
+  
   
   c$sd_q1[i] = sd(a.matrix[i,1:q1])
   c$sd_q2[i] = sd(a.matrix[i,q1:q2])

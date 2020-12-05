@@ -1,0 +1,17 @@
+---
+title: "Big Dog's Ultra Marathon"
+author: "Ricardo Cortez"
+date: "12/4/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Introduction and Background
+# Data Structure
+# Statistical Method
+# Analysis
+# Conclusion
+

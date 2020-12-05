@@ -256,7 +256,7 @@ outlierTest(fit.lm.2, cutoff = .05)
 ```
 
 ```{r}
-
+#Removed Age
 fit.lm.3 = lm(Yards ~ .+
                 Finland:difference+
                 Canada:difference+
@@ -980,6 +980,7 @@ fit.lm.15 = lm(logy ~ .
               - avg_rate_q3
                 -Russia
               - MaxSeconds
+              - difference
                 -Finland
                 -Canada
                 -Ukraine
@@ -1035,6 +1036,7 @@ fit.glm = glm(logy ~ .
                 -Ukraine
                 -Switzerland
                 -Denmark
+              - difference
                 -Belgium
                 -Ireland
                 -UK
@@ -1055,7 +1057,6 @@ fit.glm = glm(logy ~ .
                 -rate_sd4
                 -avg_sec_q2
                -avg_sec_q1
-
                 -sd_q2
                 - avg_sec_q4
               - range_q2
@@ -1094,6 +1095,7 @@ for (j in 1:10) {
                 -Denmark
                 -Belgium
                 -Ireland
+             - difference
                 -UK
                 -Germany
                 -France
@@ -1123,12 +1125,6 @@ for (j in 1:10) {
   }
 }
 LOOCV_MSE
-
-
-
-
-
-
 
 
 ```
