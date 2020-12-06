@@ -7,18 +7,90 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+options(warn=-1)
 ```
+
+```{r, include = FALSE}
+#project setup
+library(MASS)
+library(car)
+#Load Data
+
+setwd("d:/UTSA/Fall2020/DataMining/Project/stat-learning") # set working directory
+df = read.csv('FinalDF.csv') # read in raw csv data
+
+
+df$Age15_19 = as.factor(df$Age15_19)
+df$Age20_24 = as.factor(df$Age20_24)
+df$Age25_29 = as.factor(df$Age25_29)
+df$Age30_34 = as.factor(df$Age30_34)
+df$Age35_39 = as.factor(df$Age35_39)
+df$Age40_44 = as.factor(df$Age40_44)
+df$Age45_49 = as.factor(df$Age45_49)
+df$Age50_54 = as.factor(df$Age50_54)
+df$Age55_59 = as.factor(df$Age55_59)
+df$Age60_64 = as.factor(df$Age60_64)
+
+df$Australia = as.factor(df$Australia)
+df$Belarus = as.factor(df$Belarus)
+df$Belgium = as.factor(df$Belgium)
+df$Canada = as.factor(df$Canada)
+df$Denmark = as.factor(df$Denmark)
+df$Finland = as.factor(df$Finland)
+df$France = as.factor(df$France)
+df$Germany = as.factor(df$Germany)
+df$India = as.factor(df$India)
+df$Ireland = as.factor(df$Ireland)
+df$Japan = as.factor(df$Japan)
+df$Mexico = as.factor(df$Mexico)
+df$NZ = as.factor(df$NZ)
+df$Russia = as.factor(df$Russia)
+df$Singapore = as.factor(df$Singapore)
+df$Spain = as.factor(df$Spain)
+df$Sweden = as.factor(df$Sweden)
+df$Switzerland = as.factor(df$Switzerland)
+df$Ukraine = as.factor(df$Ukraine)
+df$UK= as.factor(df$UK)
+df$US= as.factor(df$US)
+
+#update belarus temps
+df$difference[163] = 10 
+df$difference[177] = 10 
+df$difference[224] = 10 
+df$difference[255] = 10 
+df$difference[266] = 10
+
+exclude_vars <- names(df) %in% c("Runner" ,"Max", "Min", "Avg" ,"Age", "Team", "X" )
+df.filtered <-df[,!exclude_vars]
+
+
+exclude_vars <- names(df) %in% c("Runner" ,"Max", "Min", "Avg" ,"Age", "Team", "Gen", "X", "Gender")
+df.filtered <-df[,!exclude_vars]
+
+
+
+```
+
 
 # Introduction and Background
 # Data Structure
-  - Original Data Structure
-  - Raw Data
-  - New Data
-  - Imputed Data
-  - Yards
-    - How do we use them
-    
+  The raw data was collected from the Big Dog’s Backyard Website. The data consisted of  300 observations, 75 run times,  and 8 independent variables: team, run time, min, max, average, gender, nationality, and age. Out of the 300 observations, 33 observations were missing age values. Since missing values can cause inaccuracies and misinterpretations, the Amelia function was utilized to generate the missing values for age. More specifically, this function was used to generate the missing age values by imputing several samples with repetition.   
+
+Due to the complications of the COVID-19 pandemic, this yearly iteration of the race presented a rare opportunity to analyze the effects of location and temperature on ultra marathon races. Each team was composed of runners from the same nation, or were at least running in the same nation. For instance if the runner was in the United States, the runner would have to run with all other United States runners in the same location. The official locations for each team were gathered manually, as well as the temperature differentials (max and min) during the run.   
+
+Once that information was gathered, attention was then focused on turning the raw run time data for each runner into usable information. The largest challenge with this was that each runner completed a different set of laps, the winner completed 75 laps while most only completed between 40 and 50 laps, some did not even complete 10 laps. The decision was made to break the laps for each runner into quarters based on their completed laps. This would allow an analysis on the individual runner’s statistics throughout the race. Using these quarters two types of statistics were created, runners and runner’s rate. The rate focused on how the runner performed lap to lap, did they go faster, slower, it is the difference between two consecutive laps. For each quarter the standard deviation, average, and median was calculated for the rate statistics. The runners statistics would be the raw lap times converted to usable statistical data, such as average, median, standard deviation, and range statistics. All of these were specific to the runners quarters. The creation of all variables can be found in the data_exploration.R file at https://github.com/Rmcortez12/stat-learning.  
+
+ The variables that were taking into consideration for the model analysis are: average rates, median of the rates, standard deviation of the rates, location which was coded as dummy variables and this consisted of 21 variables, the temperature differences of the location of each race, and age groups separated by 5 years each starting at 15 and ending at 65. 
+
 # Statistical Method
+
+ The initial goal of this project and the data exploration that occurred previously indicated that a Linear Regression approach would be sufficient. This would allow the creation of a model that can be interpreted and allow for predictions. The analysis progressed under the usual assumptions for a linear model, including the errors being independent, constant variance, and normally distributed. The initial model included a large amount of variables, that are probably highly correlated, however including them all will allow for a better analysis of which factors are the most important. The model also included the interaction effects between temperature difference and location. The first model form is:   
+ 
+$$Y = \beta_0 + [\beta_{1-4}]'Rate-SD_{1-4}+ [\beta_{5-8}]'Rate-Avg_{5-8} + [\beta_{9-12}]'Rate-Median_{9-12}+ [\beta_{13-16}]'RunnerLap-SD_{13-16}+$$ $$[\beta_{17-20}]'RunnerLap-Avg_{17-20}+ [\beta_{21-24}]'RunnerLap-Median_{21-24}+$$ $$[\beta_{25-28}]'RunnerLap-Range_{25-28}+\beta_{29}TempDiff+[\beta_{30-38}]'AgeGroup_{30-38}+\beta_{39}MaxSeconds + \beta_{40}MinSeconds +$$ $$[\beta_{41-59}]'TempDifference:Country_{41-59}+\epsilon$$
+The Rates refer to the statistics of the difference between two consecutive lap times. The Runner Lap is how each individual runner performed in that quarter, with regard to the specific statistic. The $TempDiff$ is the temperature difference of the location where that runner was running.  
+
+
+
 # Analysis
 # Conclusion
 
