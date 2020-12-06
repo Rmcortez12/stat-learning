@@ -11,6 +11,13 @@ knitr::opts_chunk$set(echo = FALSE)
 
 # Introduction and Background
 # Data Structure
+  - Original Data Structure
+  - Raw Data
+  - New Data
+  - Imputed Data
+  - Yards
+    - How do we use them
+    
 # Statistical Method
 # Analysis
 # Conclusion

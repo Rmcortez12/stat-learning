@@ -7,10 +7,14 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(warn=-1)
 ```
 
+# Group 2 Project Analysis
 
-```{r}
+ Begin by Loading in all the data, and plotting a linear model with all the variables. Make sure to set your working directory. All project code/csv/excel/etc... files can be found at https://github.com/Rmcortez12/stat-learning. Also do some preliminary scatter plot analysis. We're fairly certain all the relationships are linear. 
+```{r Load Data}
+
 library(MASS)
 library(car)
 #Load Data
@@ -77,10 +81,11 @@ plot(fit.lm)
 
 ```
 
-```{r}
+Test to see if there are any interaction effects between country and the temperature differences. 
+```{r Interaction Effects}
 #Run Model w/ interaction effects
 #0- age groups indicate 60-64 age group
-#0 - countryies indicate Belarus
+#0 - countries indicate Belarus
 
 fit.lm.1 = lm(Yards ~ .+
                 Finland:difference+
@@ -137,66 +142,17 @@ plot(fit.lm.1)
 library(car)
 vif(fit.lm.1)
 ```
-```{r}
-df.filtered$cubic_y = df.filtered$Yards^3
-fit.lm.2 = lm(cubic_y ~ .+
-                Finland:difference+
-                Canada:difference+
-                Ukraine:difference+
-                Switzerland:difference+
-                Denmark:difference+
-                Belgium:difference+
-                Ireland:difference+
-                UK:difference+
-                Germany:difference+
-                France:difference+
-                NZ:difference+
-                US:difference+
-                Japan:difference+
-                Spain:difference+
-                Australia:difference+
-                Mexico:difference+
-                India:difference+
-                Singapore:difference+
-                Russia:difference
-                - rate_sd_diff_4_1
-                -Age60_64                       
-                -Sweden
-                -Russia
-                -Finland
-                -Canada
-                -Ukraine
-                -Switzerland
-                -Denmark
-                -Belgium
-                -Ireland
-                -UK
-                -Germany
-                -France
-                -NZ
-                -US
-                -Japan
-                -Spain
-                -Australia
-                -Mexico
-                -India
-                -Singapore
-                -Belarus
-                - AvgSeconds #high vif
-                ,data = df.filtered)
 
-summary(fit.lm.2)
+Huge VIF values were noticed, tons of multicollinearity
 
-plot(fit.lm.2)
+Need to check Boxplots point 1 (winner) is suspected of being an outlier, we will remove observation for further analysis
 
-```
-```{r}
+```{r remove 1 obs}
 boxplot(df$Yards)
 mean(df$Yards)
 median(df$Yards)
-#remove points 1 and 2 almost 3x as large
+#remove points 1 almost 3x as large
 df.filtered = df.filtered[-c(1),]
-#df.filtered$cubic_y = df.filtered$Yards^(2)
 fit.lm.2 = lm(Yards ~ .+
                 Finland:difference+
                 Canada:difference+
@@ -247,15 +203,15 @@ summary(fit.lm.2)
 
 plot(fit.lm.2)
 a =boxCox(fit.lm.2,data = df.filtered)
-?boxCox
 
 library(olsrr)
-ols_plot_resid_stud(fit.lm.2)
 outlierTest(fit.lm.2, cutoff = .05)
 
 ```
 
-```{r}
+It looks like Age does not have any impact for the analysis. Run Partial F-Test to validate. 
+
+```{r remove ages keep interaction}
 #Removed Age
 fit.lm.3 = lm(Yards ~ .+
                 Finland:difference+
@@ -317,9 +273,9 @@ plot(Yards~AvgSeconds, data = df.filtered)
 
 plot(Yards~MaxSeconds, data = df.filtered)
 ```
-```{r}
 
-
+Remove interaction effects between temperature and country
+```{r remove interaction effects}
 fit.lm.4 = lm(Yards ~ .
                 - rate_sd_diff_4_1
                 -Age60_64                       
@@ -350,8 +306,8 @@ anova(fit.lm.4, fit.lm.2)
 
 #Get rid of ages but keep interactions
 ```
-
-```{r}
+Base on partial F-test above lets put interactions back but remove ages. 
+```{r remove ages}
 
 
 fit.lm.5 = lm(Yards ~ .+
@@ -414,8 +370,8 @@ summary(fit.lm.5)
 vif(fit.lm.5)
 ```
 
-
-```{r}
+Lets remove ages to make it easier to have the model statements. 
+```{r exclude ages}
 
 exclude_vars <- names(df.filtered) %in% c("rate_sd_diff_4_1",
 "Age55_59",
@@ -435,7 +391,8 @@ exclude_vars <- names(df.filtered) %in% c("rate_sd_diff_4_1",
 df.filtered.2 <-df.filtered[,!exclude_vars]
 ```
 
-```{r}
+Explore the relationship Yards has with the rest of the variables. based on the Residuals vs Fitted plot below we should try a Log transformation to stablize the curve. 
+```{r log transform}
 
 fit.lm.6 = lm(Yards ~ .+
                 Finland:difference+
@@ -538,7 +495,9 @@ plot(df.filtered.2$Yards ~range_q1+range_q2+range_q3+range_q4,data = df.filtered
 
 
 ```
-```{r}
+
+New model with observations 95, 126 removed. They appear to be data misentries. 
+```{r new model with excluded obs}
 
 fit.lm.8 = lm(logy ~ .+
                 Finland:difference+
@@ -587,9 +546,8 @@ fit.lm.8 = lm(logy ~ .+
 summary(fit.lm.8)
 plot(fit.lm.8)
 ```
-
-
-```{r}
+Remove the standard deviation rates, keep them out b/c of multicollinearity with other quarter statistics. 
+```{r rate sd}
 
 fit.lm.9 = lm(logy ~ .+
                 Finland:difference+
@@ -644,8 +602,8 @@ plot(fit.lm.9)
 
 anova(fit.lm.9, fit.lm.8)
 ```
-
-```{r}
+Remove Median Rates. 
+```{r remove median rates}
 
 fit.lm.10 = lm(logy ~ .+
                 Finland:difference+
@@ -704,8 +662,8 @@ plot(fit.lm.10)
 
 anova(fit.lm.9, fit.lm.10)
 ```
-
-```{r}
+Remove Median Seconds. 
+```{r remove median seconds}
 
 fit.lm.11 = lm(logy ~ .+
                 Finland:difference+
@@ -767,7 +725,8 @@ plot(fit.lm.11)
 
 anova(fit.lm.11, fit.lm.10)
 ```
-```{r}
+Remove average rate. 
+```{r average rate for all quarters}
 
 fit.lm.12 = lm(logy ~ .+
                 Finland:difference+
@@ -832,7 +791,8 @@ plot(fit.lm.12)
 
 anova(fit.lm.11, fit.lm.12)
 ```
-```{r}
+Remove Max Seconds
+```{r remove max seconds}
 fit.lm.13 = lm(logy ~ .+
                 Finland:difference+
                 Canada:difference+
@@ -896,7 +856,9 @@ summary(fit.lm.13)
 plot(fit.lm.13)
 anova(fit.lm.13, fit.lm.12)
 ```
-```{r}
+Remove q2 stats (avg, sd, range), q1 avg sec, q4 avg sec
+
+```{r remove q2 Stats and others}
 fit.lm.14 = lm(logy ~ .+
                 Finland:difference+
                 Canada:difference+
@@ -963,7 +925,8 @@ summary(fit.lm.14)
 plot(fit.lm.14)
 anova(fit.lm.14, fit.lm.13)
 ```
-```{r}
+Remove interaction effects because of high multicollinearity and small sample sets. There are less than 10 runners per team, and there are guidelines which forces individual team runners to end as a team. By including them we're overfitting. 
+```{r remove interaction effects again}
 fit.lm.15 = lm(logy ~ .
                 - Yards
                 -Sweden
@@ -1012,9 +975,10 @@ fit.lm.15 = lm(logy ~ .
               ,data = df.filtered.2)
 summary(fit.lm.15)
 plot(fit.lm.15)
-anova(fit.lm.14, fit.lm.15)
+vif(fit.lm.15)
 ```
-```{r}
+The Above is the final model all parameters are significant. Use GLM fit in order to do cross validation. During initial validation the interaction effects were kept in, and because they're categorical the LOOCV had to be used to ensure all countries were included in each validation step. If we had done any type of training split it's possible that some countries could have been excluded. Once the interaction effects were removed, the LOOCV was still kept as the validation method. 
+```{r Final Model and Validation}
 fit.glm = glm(logy ~ .
                 - Yards
                 -Sweden
