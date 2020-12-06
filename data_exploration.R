@@ -3,7 +3,7 @@ setwd("d:/UTSA/Fall2020/DataMining/Project/stat-learning") # set working directo
 library(sqldf) #needed to run sql queries on dataframes
 install.packages("tidyverse") #needed to deal with times
 library(lubridate) #^
-library(readxl)
+library(readxl) #needed to read temperatures from excel 
 df = read.csv('rawraw.csv',na.strings = c("","NA")) # read in raw csv data
 temps = read_excel("Leaderboard - Yards 75 updated.xlsx",sheet = "temps") # read in additional temp data
 
@@ -89,6 +89,7 @@ rate_builder <- function(dFrame){
 
 #df[,grepl("Yard.",names(df))]  this will give you all the columns that are "Yard..." Warning it does include Total Yards
 
+ # do some testing to see if logic is working as expected. 
 rate = rate_builder(teamdf$Australia[1,1:max(teamdf$Australia$Yards)+4])
 rate = rate[-1] # get rid of first lap since there is nothing to compare it too
 rate=data.matrix(rate)
@@ -110,7 +111,6 @@ sd(rate[q2:q3])
 sd(rate[q3:q4])
 
 
-#looking at this graph we can start to see a lot of spread right before they end. How do we quantify this and look for that pattern. 
 
 a =df[,grepl("Yard.",names(df))] #condense to just yard columns for time analysis
 a = a[,colSums(is.na(a))<nrow(a)] #drop rows that are all na
@@ -137,48 +137,57 @@ c$Yards = df$Yards
 #[rows,columns]
 c.matrix = as.matrix(c[1:280,])
 #need to complete more than 12 yards min.
+
+#Build a matrix of pure seconds so we can get quarterly statistics. 
 a.matrix = as.matrix(a.sec)
 
 for(i in 1:nrow(c.matrix)){
-  i_length = c.matrix[i,76]
+  #since each runner runs a different amount of laps we need to only include the laps they completed and have data for. 
+  # so take their yards(# of laps completed) and break that into quarters 
+
+    i_length = c.matrix[i,76]
   q1 = round(i_length/4,digits = 0)
   q2 = q1*2+1
   q3 = q1*3 +1
   q4 = i_length
   
+  #Create standard dev. for each quarter rate for each runner
   c$rate_sd1[i] = sd(c.matrix[i,2:q1])
   c$rate_sd2[i] = sd(c.matrix[i,q1:q2])
   c$rate_sd3[i] = sd(c.matrix[i,q2:q3])
   c$rate_sd4[i] = sd(c.matrix[i,q3:q4])
   
+  #Find average rate for each quarter for each runner
   c$avg_rate_q1[i] = mean(c.matrix[i,2:q1])
   c$avg_rate_q2[i] = mean(c.matrix[i,q1:q2])
   c$avg_rate_q3[i] = mean(c.matrix[i,q2:q3])
   c$avg_rate_q4[i] = mean(c.matrix[i,q3:q4])
   
-  
+  #Find the median rate for each quarter for each runner
   c$median_rate_q1[i] = median(c.matrix[i,2:q1])
   c$median_rate_q2[i] = median(c.matrix[i,q1:q2])
   c$median_rate_q3[i] = median(c.matrix[i,q2:q3])
   c$median_rate_q4[i] = median(c.matrix[i,q3:q4])
   
-  
+  #find the standard dev for each quarter for each runner. 
   c$sd_q1[i] = sd(a.matrix[i,1:q1])
   c$sd_q2[i] = sd(a.matrix[i,q1:q2])
   c$sd_q3[i] = sd(a.matrix[i,q2:q3])
   c$sd_q4[i] = sd(a.matrix[i,q3:q4])
   
+  #find the avg seconds for each quarter for each runner
   c$avg_sec_q1[i] = mean(a.matrix[i,1:q1])
   c$avg_sec_q2[i] = mean(a.matrix[i,q1:q2])
   c$avg_sec_q3[i] = mean(a.matrix[i,q2:q3])
   c$avg_sec_q4[i] = mean(a.matrix[i,q3:q4])
   
-  
+  #find the median seconds for each quarter for each runner
   c$median_sec_q1[i] = median(a.matrix[i,1:q1])
   c$median_sec_q2[i] = median(a.matrix[i,q1:q2])
   c$median_sec_q3[i] = median(a.matrix[i,q2:q3])
   c$median_sec_q4[i] = median(a.matrix[i,q3:q4])
   
+  #find the range lap time in seconds per quarter for each runner
   c$range_q1[i] = max(a.matrix[i,1:q1])-min(a.matrix[i,1:q1])
   c$range_q2[i] = max(a.matrix[i,q1:q2])-min(a.matrix[i,q1:q2])
   c$range_q3[i] = max(a.matrix[i,q2:q3])-min(a.matrix[i,q2:q3])
@@ -186,6 +195,7 @@ for(i in 1:nrow(c.matrix)){
   
 }
 
+# Do some initial plots see what we can see 
 
 plot.new()
 plot(c(25,50,75,100),c[17,grepl("rate_sd",names(c))],type="l",xlab = "%laps completd",ylab = "Std dev rate change",col=randomColor(10))
@@ -200,8 +210,7 @@ points(c(25,50,75,100),c[280,grepl("rate_sd",names(c))],type="l",col=randomColor
 d =c[1:280,]
 d =d[-1]
 
-lm.1 = lm(Yards~rate_sd1,data = d)
-
+# plot standard deviation rates against yards
 plot.new()
 plot(Yards~rate_sd1, data = d,col=randomColor(10))
 points(d$rate_sd1[1],d$Yards[1],pch=0:25)
@@ -215,6 +224,8 @@ plot.new()
 plot(Yards~rate_sd4, data = d,col=randomColor(10))
 points(d$rate_sd4[1],d$Yards[1],pch=0:25)
 
+
+#check out the rate difference between 4 and 1, if it's positive they're more sporadic in the last quarter. 
 d$rate_sd_diff_4_1 = d$rate_sd4-d$rate_sd1
 
 plot.new()
@@ -222,17 +233,20 @@ plot(Yards~rate_sd_diff_4_1, data = d,col=randomColor(10))
 points(d$rate_sd_diff_4_1[1],d$Yards[1],pch=0:25)
 points(d$rate_sd_diff_4_1[280],d$Yards[280],pch=0:25)
 
+
+# add back some of the original data
+
 d$Runner = df$Runner[1:280]
 d$Team = df$Team[1:280]
 d$Nationality = df$Nationality[1:280]
 
 #work on getting temps into dataframe
-
 temps$Team = temps$Country
 e<- dplyr::left_join(d,temps,by="Team")
 
 finalDF <- dplyr::inner_join(e,df, by="Runner")
 
+#remove duplicates and individual yard data
 finalDF = finalDF[,-grep("Yard.",names(finalDF))]
 finalDF$Yards = e$Yards
 finalDF =finalDF[,-grep("Team",names(finalDF))]
@@ -248,5 +262,5 @@ finalDF$AvgSeconds = time_to_Sec(finalDF$Avg)
 finalDF$MaxSeconds = time_to_Sec(finalDF$Max)
 finalDF$MinSeconds = time_to_Sec(finalDF$Min)
 
-
-write.csv(finalDF, "FinalDF.csv",row.names = TRUE)
+#Write out to csv to intake  only uncomment once you are ready 
+#write.csv(finalDF, "FinalDF.csv",row.names = TRUE)
